@@ -16,6 +16,40 @@ namespace labirint
         int[,] field;
         int sizeCell = 30;
         int userI, userJ;
+
+        bool Mark(int metka, int rowEnd, int columnEnd)
+        {
+            for (int i = 0; i < field.GetLength(0); i++)
+            {
+                for (int j = 0; j < field.GetLength(1); j++)
+                {
+                    if (field[i, j] == metka)
+                    {
+                        if (j > 0 && field[i, j - 1] == 0) field[i, j - 1] = metka + 1;
+                        if (i > 0 && field[i - 1, j] == 0) field[i - 1, j] = metka + 1;
+                        if (i < field.GetLength(0)-1 && field[i + 1, j] == 0) field[i + 1, j] = metka + 1;
+                        if (j < field.GetLength(1) - 1 && field[i, j + 1] == 0) field[i, j + 1] = metka + 1;
+                    }
+                }
+            }
+            if (field[rowEnd, columnEnd] == 0)
+                return false;
+            else
+                return true;
+        }
+        
+        int CountStep(int rowBegin, int columnBegin, int rowEnd, int columnEnd)
+        {
+            int metka = 1;
+            field[rowBegin, columnBegin] = metka;
+
+            while (!Mark(metka, rowEnd, columnEnd))
+            {
+                metka++;
+            }
+            return metka;
+        }
+
         public FormGame()
         {
             InitializeComponent();
@@ -52,7 +86,8 @@ namespace labirint
                     }
                     else
                     {
-                        dataGridViewLabirint.Rows[i].Cells[j].Value = "";
+                        //dataGridViewLabirint.Rows[i].Cells[j].Value = "";
+                        dataGridViewLabirint.Rows[i].Cells[j].Value = field[i,j];
                     }
                 }
             }   
@@ -99,10 +134,12 @@ namespace labirint
             int col = e.ColumnIndex;
             int row = e.RowIndex;
 
-            if (checkMove(row, col))
-            {
-                ShowLabirint();
-            }
+            int k = CountStep(1, 0, 5, 4);
+            ShowLabirint();
+            //if (checkMove(row, col))
+            //{
+            //    ShowLabirint();
+            //}
         }
     }
 }
