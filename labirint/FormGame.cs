@@ -17,36 +17,53 @@ namespace labirint
         int sizeCell = 30;
         int userI, userJ;
 
-        bool Mark(int metka, int rowEnd, int columnEnd)
+        //bool Mark(int metka, int rowEnd, int columnEnd)
+        //{
+        //    for (int i = 0; i < field.GetLength(0); i++)
+        //    {
+        //        for (int j = 0; j < field.GetLength(1); j++)
+        //        {
+        //            if (field[i, j] == metka)
+        //            {
+        //                if (j > 0 && field[i, j - 1] == 0) field[i, j - 1] = metka + 1;
+        //                if (i > 0 && field[i - 1, j] == 0) field[i - 1, j] = metka + 1;
+        //                if (i < field.GetLength(0) - 1 && field[i + 1, j] == 0) field[i + 1, j] = metka + 1;
+        //                if (j < field.GetLength(1) - 1 && field[i, j + 1] == 0) field[i, j + 1] = metka + 1;
+        //            }
+        //        }
+        //    }
+        //    if (field[rowEnd, columnEnd] == 0)
+        //        return false;
+        //    else
+        //        return true;
+        //}
+
+        void Mark(int metka, int rowBegin, int columnBegin, int rowEnd, int columnEnd)
         {
-            for (int i = 0; i < field.GetLength(0); i++)
-            {
-                for (int j = 0; j < field.GetLength(1); j++)
-                {
-                    if (field[i, j] == metka)
-                    {
-                        if (j > 0 && field[i, j - 1] == 0) field[i, j - 1] = metka + 1;
-                        if (i > 0 && field[i - 1, j] == 0) field[i - 1, j] = metka + 1;
-                        if (i < field.GetLength(0)-1 && field[i + 1, j] == 0) field[i + 1, j] = metka + 1;
-                        if (j < field.GetLength(1) - 1 && field[i, j + 1] == 0) field[i, j + 1] = metka + 1;
-                    }
-                }
-            }
-            if (field[rowEnd, columnEnd] == 0)
-                return false;
-            else
-                return true;
+            field[rowBegin, columnBegin] = metka;
+            if (rowBegin == rowEnd && columnBegin == columnEnd)
+                return;
+            if (columnBegin > 0 && field[rowBegin, columnBegin - 1] == 0)
+                Mark(metka + 1, rowBegin, columnBegin - 1, rowEnd, columnEnd);
+            if (rowBegin > 0 && field[rowBegin - 1, columnBegin] == 0)
+                Mark(metka + 1, rowBegin - 1, columnBegin, rowEnd, columnEnd);
+            if (rowBegin < field.GetLength(0) - 1 && field[rowBegin + 1, columnBegin] == 0)
+                Mark(metka + 1, rowBegin + 1, columnBegin, rowEnd, columnEnd);
+            if (columnBegin < field.GetLength(1) - 1 && field[rowBegin, columnBegin + 1] == 0)
+                Mark(metka + 1, rowBegin, columnBegin + 1, rowEnd, columnEnd);
         }
-        
+
+
         int CountStep(int rowBegin, int columnBegin, int rowEnd, int columnEnd)
         {
             int metka = 1;
             field[rowBegin, columnBegin] = metka;
 
-            while (!Mark(metka, rowEnd, columnEnd))
-            {
-                metka++;
-            }
+            Mark(metka, rowBegin, columnBegin, rowEnd, columnEnd);
+            //while (!Mark(metka, rowEnd, columnEnd))
+            // {
+            //     metka++;
+            // }
             return metka;
         }
 
@@ -104,9 +121,10 @@ namespace labirint
                 }
             return true;
         }
-        private void FormGame_Load(object sender, EventArgs e)
+
+        void LoadLevel(int level)
         {
-            StreamReader sr = new StreamReader("level1.txt");
+            StreamReader sr = new StreamReader("level" + level + ".txt");
             string[] temp = sr.ReadLine().Split();
             int n = Convert.ToInt32(temp[0]);
             int m = Convert.ToInt32(temp[1]);
@@ -126,7 +144,12 @@ namespace labirint
 
             CreateViewLabirint();
             ShowLabirint();
-            
+        }
+        private void FormGame_Load(object sender, EventArgs e)
+        {
+            LoadLevel(3);
+            CreateViewLabirint();
+            ShowLabirint();
         }
 
         private void dataGridViewLabirint_CellClick(object sender, DataGridViewCellEventArgs e)
@@ -134,7 +157,7 @@ namespace labirint
             int col = e.ColumnIndex;
             int row = e.RowIndex;
 
-            int k = CountStep(1, 0, 5, 4);
+            int k = CountStep(1, 0, 8, 7);
             ShowLabirint();
             //if (checkMove(row, col))
             //{
